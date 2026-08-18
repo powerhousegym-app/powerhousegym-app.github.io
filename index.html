@@ -363,6 +363,9 @@
   .ex-tag-ABDOS{background:#fdf3d0; color:#93750f;}
   .ex-tag-CARDIO{background:#e3f7e6; color:#238a3e;}
   .ex-tag-SOUPLESSE{background:#eef1f6; color:#5c6b85;}
+  .ex-tag-AVANT-BRAS{background:#fde3ec; color:#c22a6b;}
+  .ex-tag-CORPSCOMPLET{background:#e0e7ff; color:#3d4fb5;}
+  .ex-tag-DÉFI{background:#ffe0e0; color:#c73e3e;}
   .ex-reps{
     font-family:'Roboto Mono', monospace;
     font-size:11.5px; font-weight:700;
@@ -441,6 +444,36 @@
   }
   .week-overall b{color:var(--teal);}
 
+  .week-history-title{
+    margin-top:14px; padding-top:12px; border-top:1px dashed var(--line);
+    font-family:'Poppins', sans-serif; font-weight:700; font-size:12.5px; color:var(--ink);
+  }
+  .week-history{
+    display:flex; align-items:flex-end; gap:8px;
+    height:84px; margin-top:12px;
+  }
+  .week-history-col{
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    gap:4px; height:100%;
+  }
+  .week-history-count{
+    font-family:'Roboto Mono', monospace; font-size:10px; font-weight:700; color:var(--ink-dim);
+  }
+  .week-history-bar-outer{
+    width:100%; flex:1; display:flex; align-items:flex-end;
+    background:var(--bg-soft); border-radius:5px; overflow:hidden;
+  }
+  .week-history-bar-inner{
+    width:100%; background:var(--blue-soft); border-radius:5px;
+    transition:height .4s ease;
+  }
+  .week-history-bar-inner.current{
+    background:linear-gradient(180deg, var(--teal), var(--blue));
+  }
+  .week-history-label{
+    font-size:9px; font-family:'Roboto Mono', monospace; color:var(--ink-dim); font-weight:600;
+  }
+
   /* ---------- EXERCISE COMPLETION CHECKBOX ---------- */
   .ex-done-row{
     display:flex; align-items:center; gap:9px; margin-top:10px; padding-top:10px;
@@ -501,7 +534,7 @@
     padding:9px; display:flex; flex-direction:column; gap:0;
     transition:border-color .2s ease;
   }
-  .bonus-card.done{border-color:var(--teal);}
+  .bonus-card.done{border-color:var(--teal); background:var(--teal-soft);}
   .bonus-row{display:flex; align-items:center; gap:12px;}
   .bonus-card .ex-video{width:60px; height:60px; flex-shrink:0; border-radius:10px;}
   .bonus-info{flex:1; min-width:0;}
@@ -944,7 +977,7 @@ const DAYS_A = [
       ['squat','Squat barre','3 séries × 8-10 reps','Barre posée sur le haut du dos, pieds largeur épaules. Descendez en pliant hanches et genoux jusqu\'à cuisses parallèles au sol, puis remontez en poussant sur les talons.','glutes_quads','Quadriceps, fessiers','Mouvement polyarticulaire : on plie hanches et genoux avec une barre chargée sur le haut du dos.'],
       ['benchpress','Développé couché barre','3 séries × 8-10 reps','Allongé sur le banc, pieds bien à plat au sol. Saisissez la barre un peu plus large que les épaules, descendez-la vers la poitrine puis repoussez vers le haut.','bench_mistakes','Pectoraux, triceps, épaules','Poussée horizontale d\'une barre depuis la poitrine vers le haut, en position allongée.'],
       ['row','Rowing barre','3 séries × 8-10 reps','Buste penché en avant, dos droit. Tirez la barre vers le nombril en resserrant les omoplates, puis redescendez avec contrôle.','tbar_row','Dos (trapèzes, grand dorsal)','Tirage d\'une barre vers l\'abdomen, buste penché en avant, pour muscler l\'épaisseur du dos.'],
-      ['plank','Gainage (planche)','3 séries × 30-45 sec','Appui sur les avant-bras et les pointes de pieds, corps aligné de la tête aux talons. Gainez les abdos et tenez la position sans creuser le dos.','chair_abs','Sangle abdominale, gainage','Maintien statique du corps aligné en appui sur les avant-bras, sans bouger.'],
+      ['plank','Circuit abdos sur chaise','3 séries × 15 reps','Assis sur une chaise, mains derrière la tête. Enchaînez crunchs, rotations du buste et flexions latérales, dos droit, sans à-coups.','chair_abs','Sangle abdominale, obliques','Circuit d\'exercices abdominaux réalisés assis sur une chaise (crunchs, rotations, flexions latérales) — pratique si vous n\'avez pas de tapis.'],
     ]
   },
   {
@@ -953,7 +986,7 @@ const DAYS_A = [
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation, sans forcer.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['squatbw','Squats au poids du corps','2 séries × 15 reps','Pieds largeur épaules, bras tendus devant pour l\'équilibre. Descendez comme un squat normal, sans charge, puis remontez.','glutes_quads','Quadriceps, fessiers','Version du squat sans charge, pour travailler la technique et activer les jambes.'],
       ['pushup','Pompes (genoux si besoin)','2 séries × 10-12 reps','Mains largeur épaules au sol, corps gainé. Descendez la poitrine vers le sol en pliant les coudes, puis repoussez.','pushup_mistakes','Pectoraux, triceps','Poussée horizontale au poids du corps, allongé face au sol.'],
-      ['plank','Gainage','2 séries × 20-30 sec','Appui sur les avant-bras et les pieds, corps aligné. Tenez la position en gardant les abdos gainés.','chair_abs','Sangle abdominale','Maintien statique du tronc, comme en séance principale mais plus court.'],
+      ['plank','Circuit abdos sur chaise','2 séries × 12-15 reps','Assis sur une chaise, mains derrière la tête. Enchaînez quelques crunchs et rotations du buste, dos droit.','chair_abs','Sangle abdominale, obliques','Version courte du circuit abdos sur chaise, pour un jour actif.'],
       ['stretch','Étirements globaux','3-5 min','Étirez doucement les jambes, le dos et les épaules, sans à-coups, en respirant calmement.',null,'Souplesse, récupération','Étirements doux pour relâcher les muscles sollicités pendant la semaine.'],
     ]
   },
@@ -972,7 +1005,7 @@ const DAYS_A = [
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['lunge','Fentes au poids du corps','2 séries × 10/jambe','Debout, mains sur les hanches. Faites un grand pas en avant et descendez jusqu\'à ce que le genou arrière frôle le sol.','dumbbell_legs','Quadriceps, fessiers, équilibre','Un grand pas en avant puis flexion des deux genoux, en alternant les jambes.'],
       ['pushup','Pompes (genoux si besoin)','2 séries × 10-12 reps','Mains largeur épaules au sol, corps gainé. Descendez la poitrine vers le sol puis repoussez.','pushup_mistakes','Pectoraux, triceps','Poussée horizontale au poids du corps, allongé face au sol.'],
-      ['plank','Gainage','2 séries × 20-30 sec','Appui sur les avant-bras et les pieds, corps aligné, abdos gainés.','chair_abs','Sangle abdominale','Maintien statique du tronc en appui sur les avant-bras.'],
+      ['plank','Circuit abdos sur chaise','2 séries × 12-15 reps','Assis sur une chaise, mains derrière la tête. Enchaînez quelques crunchs et rotations du buste, dos droit.','chair_abs','Sangle abdominale, obliques','Version courte du circuit abdos sur chaise, pour un jour actif.'],
       ['stretch','Étirements globaux','3-5 min','Étirez doucement les jambes, le dos et les épaules en respirant calmement.',null,'Souplesse, récupération','Étirements doux pour relâcher les muscles sollicités pendant la semaine.'],
     ]
   },
@@ -990,7 +1023,7 @@ const DAYS_A = [
     exos:[
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['squatbw','Squats au poids du corps','2 séries × 15 reps','Pieds largeur épaules, bras tendus devant. Descendez comme un squat normal, sans charge, puis remontez.','glutes_quads','Quadriceps, fessiers','Version du squat sans charge, pour travailler la technique et activer les jambes.'],
-      ['plank','Gainage','2 séries × 30 sec','Appui sur les avant-bras et les pieds, corps aligné, abdos gainés.','chair_abs','Sangle abdominale','Maintien statique du tronc en appui sur les avant-bras.'],
+      ['plank','Circuit abdos sur chaise','2 séries × 12-15 reps','Assis sur une chaise, mains derrière la tête. Enchaînez quelques crunchs et rotations du buste, dos droit.','chair_abs','Sangle abdominale, obliques','Version courte du circuit abdos sur chaise, pour un jour actif.'],
       ['stretch','Étirements globaux','3-5 min','Étirez doucement les jambes, le dos et les épaules en respirant calmement.',null,'Souplesse, récupération','Étirements doux pour relâcher les muscles sollicités pendant la semaine.'],
     ]
   },
@@ -1007,7 +1040,7 @@ const DAYS_B = [
       ['squat','Front squat','3 séries × 8-10 reps','Barre posée à l\'avant des épaules, coudes hauts. Descendez le buste bien droit jusqu\'à cuisses parallèles, puis remontez.','front_squat','Quadriceps, fessiers','Variante du squat où la barre est posée à l\'avant des épaules, ce qui redresse le buste et accentue le travail des quadriceps.'],
       ['benchpress','Pull-over élastique','3 séries × 8-10 reps','Allongé au sol, tenez un élastique tendu à deux mains au-dessus de la tête, puis ramenez-le vers le bassin en gardant les bras tendus.','band_pullover','Pectoraux, dos (grand dorsal)','Tirage d\'un élastique tendu au-dessus de la tête vers le bassin, allongé au sol, qui étire et engage la poitrine.'],
       ['row','Rowing machine Smith','3 séries × 8-10 reps','Barre guidée sur machine Smith, buste penché en avant. Changez la largeur de prise pour varier la zone du dos travaillée.','smith_row_grips','Dos (trapèzes, grand dorsal)','Tirage horizontal sur machine guidée, où la largeur de prise change la zone du dos la plus sollicitée.'],
-      ['plank','Gainage (planche)','3 séries × 30-45 sec','Appui sur les avant-bras et les pointes de pieds, corps aligné de la tête aux talons. Gainez les abdos et tenez la position sans creuser le dos.','chair_abs','Sangle abdominale, gainage','Maintien statique du corps aligné en appui sur les avant-bras, sans bouger.'],
+      ['plank','Circuit abdos sur chaise','3 séries × 15 reps','Assis sur une chaise, mains derrière la tête. Enchaînez crunchs, rotations du buste et flexions latérales, dos droit, sans à-coups.','chair_abs','Sangle abdominale, obliques','Circuit d\'exercices abdominaux réalisés assis sur une chaise (crunchs, rotations, flexions latérales) — pratique si vous n\'avez pas de tapis.'],
     ]
   },
   {
@@ -1016,7 +1049,7 @@ const DAYS_B = [
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation, sans forcer.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['squatbw','Goblet squat aux haltères','2 séries × 12-15 reps','Debout, tenez un haltère à deux mains contre la poitrine. Descendez en squat comme d\'habitude, en gardant le buste droit.','dumbbell_legs5','Quadriceps, fessiers','Squat tenu avec un seul haltère contre la poitrine, qui aide à garder le buste droit pendant la descente.'],
       ['pushup','Pompes (genoux si besoin)','2 séries × 10-12 reps','Mains largeur épaules au sol, corps gainé. Descendez la poitrine vers le sol en pliant les coudes, puis repoussez.','pushup_mistakes','Pectoraux, triceps','Poussée horizontale au poids du corps, allongé face au sol.'],
-      ['plank','Gainage','2 séries × 20-30 sec','Appui sur les avant-bras et les pieds, corps aligné. Tenez la position en gardant les abdos gainés.','chair_abs','Sangle abdominale','Maintien statique du tronc, comme en séance principale mais plus court.'],
+      ['plank','Circuit abdos sur chaise','2 séries × 12-15 reps','Assis sur une chaise, mains derrière la tête. Enchaînez quelques crunchs et rotations du buste, dos droit.','chair_abs','Sangle abdominale, obliques','Version courte du circuit abdos sur chaise, pour un jour actif.'],
       ['stretch','Étirements globaux','3-5 min','Étirez doucement les jambes, le dos et les épaules, sans à-coups, en respirant calmement.',null,'Souplesse, récupération','Étirements doux pour relâcher les muscles sollicités pendant la semaine.'],
     ]
   },
@@ -1035,7 +1068,7 @@ const DAYS_B = [
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['lunge','Fentes bulgares aux haltères','2 séries × 10/jambe','Pied arrière posé sur un banc, un haltère dans chaque main. Descendez le genou avant jusqu\'à un angle de 90°, puis remontez.','dumbbell_legs4','Quadriceps, fessiers, équilibre','Fente avec le pied arrière surélevé sur un banc, ce qui augmente l\'étirement et l\'implication du quadriceps.'],
       ['pushup','Pompes (genoux si besoin)','2 séries × 10-12 reps','Mains largeur épaules au sol, corps gainé. Descendez la poitrine vers le sol puis repoussez.','pushup_mistakes','Pectoraux, triceps','Poussée horizontale au poids du corps, allongé face au sol.'],
-      ['plank','Gainage','2 séries × 20-30 sec','Appui sur les avant-bras et les pieds, corps aligné, abdos gainés.','chair_abs','Sangle abdominale','Maintien statique du tronc en appui sur les avant-bras.'],
+      ['plank','Circuit abdos sur chaise','2 séries × 12-15 reps','Assis sur une chaise, mains derrière la tête. Enchaînez quelques crunchs et rotations du buste, dos droit.','chair_abs','Sangle abdominale, obliques','Version courte du circuit abdos sur chaise, pour un jour actif.'],
       ['stretch','Étirements globaux','3-5 min','Étirez doucement les jambes, le dos et les épaules en respirant calmement.',null,'Souplesse, récupération','Étirements doux pour relâcher les muscles sollicités pendant la semaine.'],
     ]
   },
@@ -1053,7 +1086,7 @@ const DAYS_B = [
     exos:[
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['squatbw','Squats au poids du corps','2 séries × 15 reps','Pieds largeur épaules, bras tendus devant. Descendez comme un squat normal, sans charge, puis remontez.','glutes_quads','Quadriceps, fessiers','Version du squat sans charge, pour travailler la technique et activer les jambes.'],
-      ['plank','Gainage','2 séries × 30 sec','Appui sur les avant-bras et les pieds, corps aligné, abdos gainés.','chair_abs','Sangle abdominale','Maintien statique du tronc en appui sur les avant-bras.'],
+      ['plank','Circuit abdos sur chaise','2 séries × 12-15 reps','Assis sur une chaise, mains derrière la tête. Enchaînez quelques crunchs et rotations du buste, dos droit.','chair_abs','Sangle abdominale, obliques','Version courte du circuit abdos sur chaise, pour un jour actif.'],
       ['stretch','Étirements globaux','3-5 min','Étirez doucement les jambes, le dos et les épaules en respirant calmement.',null,'Souplesse, récupération','Étirements doux pour relâcher les muscles sollicités pendant la semaine.'],
     ]
   },
@@ -1078,7 +1111,9 @@ function getISOWeekKey(d){
 }
 const currentWeekKey = getISOWeekKey(new Date());
 let completions = new Set();       // clés "dayN:exIndex" réalisées cette semaine
-let totalCompletionsCount = 0;     // total d'exercices cochés depuis le début (toutes semaines)
+let totalCompletionsCount = 0;     // total d'exercices cochés depuis le début (toutes semaines, hors bonus)
+let bonusCompletions = new Set();  // clés "flatIndex" des exercices bonus réalisés cette semaine
+let weeklyHistory = {};            // { "2026-W34": nombre_realise, ... } pour la courbe de progression
 
 
 /* ---------------- VIDEO LAUNCHER (100% hors ligne — vidéos locales uniquement) ---------------- */
@@ -1245,7 +1280,6 @@ function renderDays(week){
         cb.nextElementSibling.textContent = cb.checked ? '✓ Réalisé cette semaine' : 'Marquer comme réalisé';
         updateDayBadge(el, day);
         updateCheckAllBtn(el, day);
-        renderWeekSummary();
       });
     });
 
@@ -1290,6 +1324,7 @@ document.getElementById('weekToggle').querySelectorAll('.week-btn').forEach(btn 
 const BONUS_GROUPS = [
   {
     title:'Épaules — santé & volume',
+    tag:'ÉPAULES',
     items:[
       { slug:'face_pull_elbows', tip:'À ajouter après le développé militaire (séance B) : 3 séries de 12-15 pour la santé des épaules.' },
       { slug:'face_pull_tips', tip:'Variante rapide du face pull — alternez avec la vidéo précédente d\'une séance à l\'autre.' },
@@ -1302,6 +1337,7 @@ const BONUS_GROUPS = [
   },
   {
     title:'Avant-bras',
+    tag:'AVANT-BRAS',
     items:[
       { slug:'forearms_dumbbell', tip:'Circuit complet fléchisseurs/extenseurs, à faire en fin de séance A ou B.' },
       { slug:'forearms_workout', tip:'Un travail souvent oublié — utile pour la force de préhension sur tous les tirages.' },
@@ -1311,12 +1347,14 @@ const BONUS_GROUPS = [
   },
   {
     title:'Entraînement à la maison',
+    tag:'CORPS COMPLET',
     items:[
       { slug:'dumbbell_10_machines', tip:'Comparatif salle/maison pour pectoraux, biceps, triceps et épaules — utile si vous voyagez ou n\'avez que des haltères.' },
     ]
   },
   {
     title:'Défi & test',
+    tag:'DÉFI',
     items:[
       { slug:'fullbody_test', tip:'Un défi complet à tenter une fois par mois pour mesurer votre progression générale.' },
     ]
@@ -1324,34 +1362,56 @@ const BONUS_GROUPS = [
 ];
 
 const bonusContentEl = document.getElementById('bonusContent');
-bonusContentEl.innerHTML = BONUS_GROUPS.map(group => `
-  <div class="bonus-group">
-    <div class="bonus-group-title">${group.title}</div>
-    <div class="bonus-list">
-      ${group.items.map(item => {
-        const data = LOCAL_VIDEOS[item.slug];
-        if(!data) return '';
-        const title = data.title.replace(/"/g,'&quot;');
-        return `
-        <div class="bonus-card">
-          <div class="bonus-row">
-            <div class="ex-video local" data-slug="${item.slug}" data-title="${title}" role="button" tabindex="0" aria-label="Voir la vidéo : ${title}">
-              <img src="${data.poster}" alt="" loading="lazy">
-              <div class="play-dot"></div>
-            </div>
-            <div class="bonus-info">
-              <div class="bonus-title">${data.title}</div>
-              <div class="bonus-tip">${item.tip}</div>
-            </div>
-          </div>
-          <div class="ex-player"></div>
-        </div>`;
-      }).join('')}
-    </div>
-  </div>
-`).join('');
 
-wireVideoLauncher(bonusContentEl);
+function renderBonus(){
+  let bonusFlatIndex = 0;
+  bonusContentEl.innerHTML = BONUS_GROUPS.map(group => `
+    <div class="bonus-group">
+      <div class="bonus-group-title">${group.title} <span class="ex-tag ex-tag-${group.tag.replace(/[^A-ZÉ-]/g,'')}">${group.tag}</span></div>
+      <div class="bonus-list">
+        ${group.items.map(item => {
+          const data = LOCAL_VIDEOS[item.slug];
+          if(!data) return '';
+          const title = data.title.replace(/"/g,'&quot;');
+          const flatIdx = bonusFlatIndex++;
+          const isDone = bonusCompletions.has(`${flatIdx}`);
+          return `
+          <div class="bonus-card ${isDone ? 'done' : ''}">
+            <div class="bonus-row">
+              <div class="ex-video local" data-slug="${item.slug}" data-title="${title}" role="button" tabindex="0" aria-label="Voir la vidéo : ${title}">
+                <img src="${data.poster}" alt="" loading="lazy">
+                <div class="play-dot"></div>
+              </div>
+              <div class="bonus-info">
+                <div class="bonus-title">${data.title}</div>
+                <div class="bonus-tip">${item.tip}</div>
+              </div>
+            </div>
+            <div class="ex-player"></div>
+            <label class="ex-done-row">
+              <input type="checkbox" class="bonus-done-check" data-idx="${flatIdx}" ${isDone ? 'checked' : ''}>
+              <span>${isDone ? '✓ Réalisé cette semaine' : 'Marquer comme réalisé'}</span>
+            </label>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  wireVideoLauncher(bonusContentEl);
+
+  bonusContentEl.querySelectorAll('.bonus-done-check').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const idx = parseInt(cb.getAttribute('data-idx'), 10);
+      toggleBonusCompletion(idx, cb.checked);
+      const card = cb.closest('.bonus-card');
+      card.classList.toggle('done', cb.checked);
+      cb.nextElementSibling.textContent = cb.checked ? '✓ Réalisé cette semaine' : 'Marquer comme réalisé';
+    });
+  });
+}
+
+renderBonus();
 
 /* ---------------- CALCULATOR & PROGRESS TRACKING ---------------- */
 const LEVELS = {
@@ -1393,40 +1453,69 @@ async function saveProfile(profile){
 
 async function loadCompletions(){
   completions = new Set();
+  bonusCompletions = new Set();
+  weeklyHistory = {};
   totalCompletionsCount = 0;
   if(!currentUser || !sb) return;
   try{
-    const { data, error } = await sb.from('exercise_completions').select('day_n,ex_index').eq('user_id', currentUser.id).eq('week_key', currentWeekKey);
+    const { data, error } = await sb.from('exercise_completions').select('week_key,day_n,ex_index').eq('user_id', currentUser.id);
     if(error) throw error;
-    (data || []).forEach(r => completions.add(`${r.day_n}:${r.ex_index}`));
-  }catch(e){ console.error('Supabase loadCompletions (semaine) error:', e); }
-  try{
-    const { count, error } = await sb.from('exercise_completions').select('*', { count:'exact', head:true }).eq('user_id', currentUser.id);
-    if(error) throw error;
-    totalCompletionsCount = count || 0;
-  }catch(e){ console.error('Supabase loadCompletions (total) error:', e); }
+    (data || []).forEach(r => {
+      if(r.day_n === 99){
+        if(r.week_key === currentWeekKey) bonusCompletions.add(`${r.ex_index}`);
+      } else {
+        weeklyHistory[r.week_key] = (weeklyHistory[r.week_key] || 0) + 1;
+        totalCompletionsCount++;
+        if(r.week_key === currentWeekKey) completions.add(`${r.day_n}:${r.ex_index}`);
+      }
+    });
+  }catch(e){ console.error('Supabase loadCompletions error:', e); }
 }
 
 async function toggleCompletion(dayN, exIndex, checked){
   const key = `${dayN}:${exIndex}`;
   if(checked){
-    if(!completions.has(key)) totalCompletionsCount++;
+    if(!completions.has(key)){
+      totalCompletionsCount++;
+      weeklyHistory[currentWeekKey] = (weeklyHistory[currentWeekKey] || 0) + 1;
+    }
     completions.add(key);
   } else {
-    if(completions.has(key)) totalCompletionsCount = Math.max(totalCompletionsCount - 1, 0);
+    if(completions.has(key)){
+      totalCompletionsCount = Math.max(totalCompletionsCount - 1, 0);
+      weeklyHistory[currentWeekKey] = Math.max((weeklyHistory[currentWeekKey] || 0) - 1, 0);
+    }
     completions.delete(key);
   }
+  renderWeekSummary(); // mise à jour instantanée de la courbe, avant l'appel réseau
+  if(currentUser && sb){
+    try{
+      if(checked){
+        await sb.from('exercise_completions').upsert(
+          { user_id: currentUser.id, week_key: currentWeekKey, day_n: dayN, ex_index: exIndex },
+          { onConflict: 'user_id,week_key,day_n,ex_index' }
+        );
+      } else {
+        await sb.from('exercise_completions').delete().match({ user_id: currentUser.id, week_key: currentWeekKey, day_n: dayN, ex_index: exIndex });
+      }
+    }catch(e){ console.error('Supabase toggleCompletion error:', e); }
+  }
+}
+
+async function toggleBonusCompletion(flatIndex, checked){
+  const key = `${flatIndex}`;
+  if(checked) bonusCompletions.add(key); else bonusCompletions.delete(key);
   if(!currentUser || !sb) return;
   try{
     if(checked){
       await sb.from('exercise_completions').upsert(
-        { user_id: currentUser.id, week_key: currentWeekKey, day_n: dayN, ex_index: exIndex },
+        { user_id: currentUser.id, week_key: currentWeekKey, day_n: 99, ex_index: flatIndex },
         { onConflict: 'user_id,week_key,day_n,ex_index' }
       );
     } else {
-      await sb.from('exercise_completions').delete().match({ user_id: currentUser.id, week_key: currentWeekKey, day_n: dayN, ex_index: exIndex });
+      await sb.from('exercise_completions').delete().match({ user_id: currentUser.id, week_key: currentWeekKey, day_n: 99, ex_index: flatIndex });
     }
-  }catch(e){ console.error('Supabase toggleCompletion error:', e); }
+  }catch(e){ console.error('Supabase toggleBonusCompletion error:', e); }
 }
 
 function computeWeekTotal(week){
@@ -1451,6 +1540,29 @@ function renderWeekSummary(){
     overallHtml = `<div class="week-overall">Assiduité sur vos 12 semaines d'objectif : <b>${overallPct}%</b> (${totalCompletionsCount} exercice${totalCompletionsCount > 1 ? 's' : ''} réalisé${totalCompletionsCount > 1 ? 's' : ''} au total)</div>`;
   }
 
+  // Courbe de progression — dernières semaines, mise à jour instantanée
+  const weekKeys = new Set(Object.keys(weeklyHistory));
+  weekKeys.add(currentWeekKey);
+  const sortedWeeks = Array.from(weekKeys).sort();
+  const last6 = sortedWeeks.slice(-6);
+  const maxRef = Math.max(total, 1);
+  const historyHtml = last6.length > 1 ? `
+    <div class="week-history-title">📈 Séances réalisées — dernières semaines</div>
+    <div class="week-history">
+      ${last6.map(wk => {
+        const count = wk === currentWeekKey ? done : (weeklyHistory[wk] || 0);
+        const barPct = Math.max(Math.min(Math.round((count / maxRef) * 100), 100), count > 0 ? 5 : 0);
+        const isCurrent = wk === currentWeekKey;
+        const label = wk.includes('-W') ? wk.split('-W')[1] : wk;
+        return `<div class="week-history-col">
+          <div class="week-history-count">${count}</div>
+          <div class="week-history-bar-outer"><div class="week-history-bar-inner ${isCurrent ? 'current' : ''}" style="height:${barPct}%"></div></div>
+          <div class="week-history-label">${isCurrent ? '●' : ''}S${label}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  ` : '';
+
   el.innerHTML = `
     <div class="week-summary-head">
       <span>📅 Cette semaine</span>
@@ -1465,6 +1577,7 @@ function renderWeekSummary(){
           : '🎉 Tous les exercices de la semaine sont réalisés — excellent travail !'
     }</div>
     ${overallHtml}
+    ${historyHtml}
   `;
 }
 
@@ -1673,6 +1786,7 @@ async function onAuthed(user){
   renderLogTable();
   computeAndRender();
   renderDays(currentWeek);
+  renderBonus();
   renderWeekSummary();
 }
 
