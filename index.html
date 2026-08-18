@@ -295,6 +295,17 @@
     padding:6px 4px 4px;
   }
 
+  .day-check-all{
+    width:100%; padding:11px; border-radius:10px; border:1.5px dashed var(--line);
+    background:var(--bg-soft); color:var(--ink-dim);
+    font-family:'Poppins', sans-serif; font-weight:700; font-size:12.5px;
+    cursor:pointer; text-align:center; transition:all .2s ease;
+  }
+  .day-check-all:active{opacity:.8;}
+  .day-check-all.all-done{
+    border-style:solid; border-color:var(--teal); background:var(--teal-soft); color:var(--teal);
+  }
+
   /* ---------- EXERCISE CARD ---------- */
   .ex-card{
     display:flex; flex-direction:column; gap:0;
@@ -338,6 +349,20 @@
   .ex-info{flex:1; min-width:0;}
   .ex-num{font-family:'Roboto Mono', monospace; font-size:10.5px; color:var(--ink-dim); font-weight:600;}
   .ex-name{font-size:15.5px; font-weight:700; color:var(--ink); line-height:1.3;}
+  .ex-tag{
+    display:inline-block; vertical-align:middle; margin-left:2px;
+    font-family:'Roboto Mono', monospace; font-size:8.5px; font-weight:700;
+    letter-spacing:.4px; padding:2px 6px; border-radius:20px;
+    background:var(--bg-soft); color:var(--ink-dim);
+  }
+  .ex-tag-JAMBES{background:#fde7d6; color:#c2622a;}
+  .ex-tag-DOS{background:var(--blue-soft); color:var(--blue-dark);}
+  .ex-tag-ÉPAULES{background:#ece5fd; color:#6b3fd4;}
+  .ex-tag-BRAS{background:#fde3ec; color:#c22a6b;}
+  .ex-tag-PECTORAUX{background:var(--teal-soft); color:#0a7d70;}
+  .ex-tag-ABDOS{background:#fdf3d0; color:#93750f;}
+  .ex-tag-CARDIO{background:#e3f7e6; color:#238a3e;}
+  .ex-tag-SOUPLESSE{background:#eef1f6; color:#5c6b85;}
   .ex-reps{
     font-family:'Roboto Mono', monospace;
     font-size:11.5px; font-weight:700;
@@ -462,28 +487,32 @@
   .bonus summary .chev{transition:transform .3s ease; font-size:15px; color:var(--violet);}
   .bonus[open] summary .chev{transform:rotate(90deg);}
   .bonus-sub{font-size:12.5px; color:var(--ink-dim); line-height:1.6; margin:12px 0 14px;}
+  .bonus-group{margin-bottom:18px;}
+  .bonus-group:last-child{margin-bottom:0;}
   .bonus-group-title{
+    display:flex; align-items:center; gap:8px;
     font-family:'Roboto Mono', monospace; font-size:11px; font-weight:700; letter-spacing:.5px;
-    text-transform:uppercase; color:var(--violet); margin:16px 0 8px;
+    text-transform:uppercase; color:var(--violet); margin-bottom:8px;
   }
-  .bonus-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .bonus-group-title::after{content:''; flex:1; height:1px; background:var(--line);}
+  .bonus-list{display:flex; flex-direction:column; gap:8px;}
   .bonus-card{
     border:1px solid var(--line); border-radius:12px; background:var(--bg-soft);
-    padding:9px; display:flex; flex-direction:column; gap:8px;
+    padding:9px; display:flex; flex-direction:column; gap:0;
+    transition:border-color .2s ease;
   }
-  .bonus-card .ex-video{width:100%; height:auto; aspect-ratio:9/16; border-radius:10px;}
-  .bonus-card .bonus-title{font-size:12px; font-weight:700; color:var(--ink); line-height:1.35;}
-  .bonus-card .bonus-tip{font-size:10.5px; color:var(--ink-dim); line-height:1.5;}
-  .bonus-card .ex-player{margin-top:0;}
+  .bonus-card.done{border-color:var(--teal);}
+  .bonus-row{display:flex; align-items:center; gap:12px;}
+  .bonus-card .ex-video{width:60px; height:60px; flex-shrink:0; border-radius:10px;}
+  .bonus-info{flex:1; min-width:0;}
+  .bonus-title{font-size:13px; font-weight:700; color:var(--ink); line-height:1.3;}
+  .bonus-tip{font-size:11px; color:var(--ink-dim); line-height:1.45; margin-top:2px;}
+  .bonus-card .ex-player{margin-top:8px;}
 
   footer{
     text-align:center; margin-top:26px;
     font-size:11.5px; color:var(--ink-dim); line-height:1.7;
     padding:0 10px;
-  }
-
-  @media (max-width:380px){
-    .bonus-grid{grid-template-columns:1fr;}
   }
 
   /* ---------- AUTH SCREEN ---------- */
@@ -1053,6 +1082,21 @@ let totalCompletionsCount = 0;     // total d'exercices cochés depuis le début
 
 
 /* ---------------- VIDEO LAUNCHER (100% hors ligne — vidéos locales uniquement) ---------------- */
+function shortMuscleTag(txt){
+  if(!txt) return '';
+  const t = txt.toLowerCase();
+  if(t.includes('quadriceps') || t.includes('ischio') || t.includes('fessiers')) return 'JAMBES';
+  if(t.includes('pectoraux')) return 'PECTORAUX';
+  if(t.includes('dos')) return 'DOS';
+  if(t.includes('épaules') || t.includes('deltoïdes')) return 'ÉPAULES';
+  if(t.includes('biceps')) return 'BRAS';
+  if(t.includes('triceps')) return 'BRAS';
+  if(t.includes('abdominale') || t.includes('gainage')) return 'ABDOS';
+  if(t.includes('cardio')) return 'CARDIO';
+  if(t.includes('souplesse')) return 'SOUPLESSE';
+  return '';
+}
+
 function buildVideoLauncher(opts){
   // opts: { localSlug }
   const local = opts.localSlug ? LOCAL_VIDEOS[opts.localSlug] : null;
@@ -1106,6 +1150,15 @@ function updateDayBadge(dayEl, day){
   badge.classList.toggle('day-badge-done', total > 0 && doneCount === total);
 }
 
+function updateCheckAllBtn(dayEl, day){
+  if(day.rest) return;
+  const btn = dayEl.querySelector('.day-check-all');
+  if(!btn) return;
+  const allDone = day.exos.length > 0 && day.exos.every((_,i) => completions.has(`${day.n}:${i}`));
+  btn.textContent = allDone ? '↺ Annuler la séance (tout décocher)' : '✓ Marquer toute la séance comme réalisée';
+  btn.classList.toggle('all-done', allDone);
+}
+
 function renderDays(week){
   const DAYS = week === 'B' ? DAYS_B : DAYS_A;
   daysEl.innerHTML = '';
@@ -1121,6 +1174,8 @@ function renderDays(week){
           const captionHtml = launcher.caption ? `<div class="ex-video-caption">▶ ${launcher.caption}</div>` : '';
           const objectifHtml = e[5] ? `<div class="ex-objectif">🎯 ${e[5]}</div>` : '';
           const consisteHtml = e[6] ? `<div class="ex-consiste">${e[6]}</div>` : '';
+          const tag = shortMuscleTag(e[5]);
+          const tagHtml = tag ? `<span class="ex-tag ex-tag-${tag}">${tag}</span>` : '';
           const doneKey = `${day.n}:${i}`;
           const isDone = completions.has(doneKey);
           return `
@@ -1129,7 +1184,7 @@ function renderDays(week){
             ${launcher.thumbHtml}
             <div class="ex-info">
               <div class="ex-num">EXERCICE ${i+1}</div>
-              <div class="ex-name">${e[1]}</div>
+              <div class="ex-name">${e[1]} ${tagHtml}</div>
             </div>
             <div class="ex-reps">${e[2]}</div>
           </div>
@@ -1145,6 +1200,8 @@ function renderDays(week){
       `;
         }).join('');
 
+    const checkAllHtml = day.rest ? '' : `<button type="button" class="day-check-all">✓ Marquer toute la séance comme réalisée</button>`;
+
     el.innerHTML = `
       <button class="day-header" type="button" aria-expanded="false">
         <div class="day-badge">J${day.n}</div>
@@ -1157,7 +1214,7 @@ function renderDays(week){
       </button>
       <div class="day-content-outer">
         <div class="day-content-inner">
-          <div class="day-content">${exosHtml}</div>
+          <div class="day-content">${checkAllHtml}${exosHtml}</div>
         </div>
       </div>
     `;
@@ -1187,11 +1244,26 @@ function renderDays(week){
         card.classList.toggle('done', cb.checked);
         cb.nextElementSibling.textContent = cb.checked ? '✓ Réalisé cette semaine' : 'Marquer comme réalisé';
         updateDayBadge(el, day);
+        updateCheckAllBtn(el, day);
         renderWeekSummary();
       });
     });
 
+    const checkAllBtn = el.querySelector('.day-check-all');
+    if(checkAllBtn){
+      checkAllBtn.addEventListener('click', () => {
+        const allDone = day.exos.every((_, i) => completions.has(`${day.n}:${i}`));
+        const setTo = !allDone; // tout cocher si au moins un manque, sinon tout décocher
+        el.querySelectorAll('.ex-done-check').forEach(cb => {
+          if(cb.checked === setTo) return;
+          cb.checked = setTo;
+          cb.dispatchEvent(new Event('change'));
+        });
+      });
+    }
+
     updateDayBadge(el, day);
+    updateCheckAllBtn(el, day);
     daysEl.appendChild(el);
   });
 
@@ -1253,24 +1325,29 @@ const BONUS_GROUPS = [
 
 const bonusContentEl = document.getElementById('bonusContent');
 bonusContentEl.innerHTML = BONUS_GROUPS.map(group => `
-  <div class="bonus-group-title">${group.title}</div>
-  <div class="bonus-grid">
-    ${group.items.map(item => {
-      const data = LOCAL_VIDEOS[item.slug];
-      if(!data) return '';
-      const title = data.title.replace(/"/g,'&quot;');
-      return `
-      <div class="bonus-card">
-        <div class="ex-video local" data-slug="${item.slug}" data-title="${title}" role="button" tabindex="0" aria-label="Voir la vidéo : ${title}">
-          <img src="${data.poster}" alt="" loading="lazy">
-          <div class="play-dot"></div>
-          <span class="video-src-tag">LOCAL</span>
-        </div>
-        <div class="ex-player"></div>
-        <div class="bonus-title">${data.title}</div>
-        <div class="bonus-tip">${item.tip}</div>
-      </div>`;
-    }).join('')}
+  <div class="bonus-group">
+    <div class="bonus-group-title">${group.title}</div>
+    <div class="bonus-list">
+      ${group.items.map(item => {
+        const data = LOCAL_VIDEOS[item.slug];
+        if(!data) return '';
+        const title = data.title.replace(/"/g,'&quot;');
+        return `
+        <div class="bonus-card">
+          <div class="bonus-row">
+            <div class="ex-video local" data-slug="${item.slug}" data-title="${title}" role="button" tabindex="0" aria-label="Voir la vidéo : ${title}">
+              <img src="${data.poster}" alt="" loading="lazy">
+              <div class="play-dot"></div>
+            </div>
+            <div class="bonus-info">
+              <div class="bonus-title">${data.title}</div>
+              <div class="bonus-tip">${item.tip}</div>
+            </div>
+          </div>
+          <div class="ex-player"></div>
+        </div>`;
+      }).join('')}
+    </div>
   </div>
 `).join('');
 
