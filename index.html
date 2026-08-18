@@ -394,6 +394,45 @@
     margin:-8px 0 18px;
   }
 
+  /* ---------- WEEK SUMMARY (completion tracking) ---------- */
+  .week-summary-card{
+    border:1.5px solid var(--line); border-radius:14px; padding:16px 18px;
+    margin-bottom:18px; background:var(--card);
+  }
+  .week-summary-card:empty{display:none;}
+  .week-summary-head{
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:'Poppins', sans-serif; font-weight:700; font-size:14.5px; color:var(--ink);
+    margin-bottom:10px;
+  }
+  .week-summary-count{font-family:'Roboto Mono', monospace; color:var(--teal); font-weight:700; font-size:15px;}
+  .progress-bar-outer{width:100%; height:10px; background:var(--bg-soft); border-radius:6px; overflow:hidden; margin-bottom:10px;}
+  .progress-bar-inner{height:100%; background:linear-gradient(90deg, var(--blue), var(--teal)); border-radius:6px; transition:width .4s ease;}
+  .week-summary-msg{font-size:12.5px; color:var(--ink-dim); line-height:1.6;}
+  .week-summary-msg b{color:var(--ink);}
+  .week-overall{
+    margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);
+    font-size:11.5px; color:var(--ink-dim); line-height:1.6;
+  }
+  .week-overall b{color:var(--teal);}
+
+  /* ---------- EXERCISE COMPLETION CHECKBOX ---------- */
+  .ex-done-row{
+    display:flex; align-items:center; gap:9px; margin-top:10px; padding-top:10px;
+    border-top:1px dashed var(--line); font-size:12.5px; font-weight:600;
+    color:var(--ink-dim); cursor:pointer;
+  }
+  .ex-done-row input{width:18px; height:18px; accent-color:var(--teal); cursor:pointer; flex-shrink:0;}
+  .ex-card.done{border-color:var(--teal); background:var(--teal-soft);}
+  .ex-card.done .ex-done-row{color:var(--teal);}
+
+  .day-badge{position:relative;}
+  .day-badge-done::after{
+    content:'✓'; position:absolute; top:-5px; right:-5px; width:17px; height:17px; border-radius:50%;
+    background:var(--teal); color:#fff; font-size:10px; font-weight:900;
+    display:flex; align-items:center; justify-content:center; border:2px solid var(--bg);
+  }
+
   /* type colors: main strength day = blue, active day = teal */
   .main .day-badge{background:var(--blue);}
   .main .day-dur{color:var(--blue); background:var(--blue-soft);}
@@ -650,6 +689,8 @@
     </div>
   </div>
   <div class="week-note">Les deux semaines ciblent les mêmes groupes musculaires avec des exercices différents — alternez-les d'une semaine sur l'autre pour progresser sans routine.</div>
+
+  <div class="week-summary-card" id="weekSummary"></div>
 
   <div id="days"></div>
 
@@ -995,6 +1036,21 @@ const DAYS_B = [
 
 let currentWeek = 'A';
 
+/* ---------------- WEEKLY COMPLETION TRACKING ---------------- */
+function getISOWeekKey(d){
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = (d.getUTCDay() + 6) % 7;
+  d.setUTCDate(d.getUTCDate() - dayNum + 3);
+  const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
+  const weekNum = 1 + Math.round((d - firstThursday) / (7 * 24 * 3600 * 1000));
+  return `${d.getUTCFullYear()}-W${String(weekNum).padStart(2,'0')}`;
+}
+const currentWeekKey = getISOWeekKey(new Date());
+let completions = new Set();       // clés "dayN:exIndex" réalisées cette semaine
+let totalCompletionsCount = 0;     // total d'exercices cochés depuis le début (toutes semaines)
+
 
 /* ---------------- VIDEO LAUNCHER (100% hors ligne — vidéos locales uniquement) ---------------- */
 function buildVideoLauncher(opts){
@@ -1041,6 +1097,15 @@ function wireVideoLauncher(container){
 /* ---------------- RENDER DAYS ---------------- */
 const daysEl = document.getElementById('days');
 
+function updateDayBadge(dayEl, day){
+  if(day.rest) return;
+  const badge = dayEl.querySelector('.day-badge');
+  if(!badge) return;
+  const total = day.exos.length;
+  const doneCount = day.exos.filter((_,i) => completions.has(`${day.n}:${i}`)).length;
+  badge.classList.toggle('day-badge-done', total > 0 && doneCount === total);
+}
+
 function renderDays(week){
   const DAYS = week === 'B' ? DAYS_B : DAYS_A;
   daysEl.innerHTML = '';
@@ -1056,8 +1121,10 @@ function renderDays(week){
           const captionHtml = launcher.caption ? `<div class="ex-video-caption">▶ ${launcher.caption}</div>` : '';
           const objectifHtml = e[5] ? `<div class="ex-objectif">🎯 ${e[5]}</div>` : '';
           const consisteHtml = e[6] ? `<div class="ex-consiste">${e[6]}</div>` : '';
+          const doneKey = `${day.n}:${i}`;
+          const isDone = completions.has(doneKey);
           return `
-        <div class="ex-card">
+        <div class="ex-card ${isDone ? 'done' : ''}">
           <div class="ex-top">
             ${launcher.thumbHtml}
             <div class="ex-info">
@@ -1070,6 +1137,10 @@ function renderDays(week){
           ${consisteHtml}
           <div class="ex-start"><b>Comment commencer</b>${e[3] || ''}${captionHtml}</div>
           <div class="ex-player"></div>
+          <label class="ex-done-row">
+            <input type="checkbox" class="ex-done-check" data-day="${day.n}" data-ex="${i}" ${isDone ? 'checked' : ''}>
+            <span>${isDone ? '✓ Réalisé cette semaine' : 'Marquer comme réalisé'}</span>
+          </label>
         </div>
       `;
         }).join('');
@@ -1106,6 +1177,21 @@ function renderDays(week){
     });
 
     wireVideoLauncher(el);
+
+    el.querySelectorAll('.ex-done-check').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const dayN = parseInt(cb.getAttribute('data-day'), 10);
+        const exIdx = parseInt(cb.getAttribute('data-ex'), 10);
+        toggleCompletion(dayN, exIdx, cb.checked);
+        const card = cb.closest('.ex-card');
+        card.classList.toggle('done', cb.checked);
+        cb.nextElementSibling.textContent = cb.checked ? '✓ Réalisé cette semaine' : 'Marquer comme réalisé';
+        updateDayBadge(el, day);
+        renderWeekSummary();
+      });
+    });
+
+    updateDayBadge(el, day);
     daysEl.appendChild(el);
   });
 
@@ -1123,8 +1209,10 @@ document.getElementById('weekToggle').querySelectorAll('.week-btn').forEach(btn 
     currentWeek = week;
     document.querySelectorAll('#weekToggle .week-btn').forEach(b => b.classList.toggle('active', b === btn));
     renderDays(currentWeek);
+    if(currentUser) renderWeekSummary();
   });
 });
+
 
 /* ---------------- BONUS VIDEOS (uploaded clips with no direct slot in the program) ---------------- */
 const BONUS_GROUPS = [
@@ -1224,6 +1312,83 @@ async function saveProfile(profile){
       updated_at: new Date().toISOString()
     });
   }catch(e){ console.error('Supabase saveProfile error:', e); }
+}
+
+async function loadCompletions(){
+  completions = new Set();
+  totalCompletionsCount = 0;
+  if(!currentUser || !sb) return;
+  try{
+    const { data, error } = await sb.from('exercise_completions').select('day_n,ex_index').eq('user_id', currentUser.id).eq('week_key', currentWeekKey);
+    if(error) throw error;
+    (data || []).forEach(r => completions.add(`${r.day_n}:${r.ex_index}`));
+  }catch(e){ console.error('Supabase loadCompletions (semaine) error:', e); }
+  try{
+    const { count, error } = await sb.from('exercise_completions').select('*', { count:'exact', head:true }).eq('user_id', currentUser.id);
+    if(error) throw error;
+    totalCompletionsCount = count || 0;
+  }catch(e){ console.error('Supabase loadCompletions (total) error:', e); }
+}
+
+async function toggleCompletion(dayN, exIndex, checked){
+  const key = `${dayN}:${exIndex}`;
+  if(checked){
+    if(!completions.has(key)) totalCompletionsCount++;
+    completions.add(key);
+  } else {
+    if(completions.has(key)) totalCompletionsCount = Math.max(totalCompletionsCount - 1, 0);
+    completions.delete(key);
+  }
+  if(!currentUser || !sb) return;
+  try{
+    if(checked){
+      await sb.from('exercise_completions').upsert(
+        { user_id: currentUser.id, week_key: currentWeekKey, day_n: dayN, ex_index: exIndex },
+        { onConflict: 'user_id,week_key,day_n,ex_index' }
+      );
+    } else {
+      await sb.from('exercise_completions').delete().match({ user_id: currentUser.id, week_key: currentWeekKey, day_n: dayN, ex_index: exIndex });
+    }
+  }catch(e){ console.error('Supabase toggleCompletion error:', e); }
+}
+
+function computeWeekTotal(week){
+  const DAYS = week === 'B' ? DAYS_B : DAYS_A;
+  let total = 0;
+  DAYS.forEach(day => { if(!day.rest) total += day.exos.length; });
+  return total;
+}
+
+function renderWeekSummary(){
+  const el = document.getElementById('weekSummary');
+  if(!el) return;
+  const total = computeWeekTotal(currentWeek);
+  const done = completions.size;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  const remaining = Math.max(total - done, 0);
+
+  let overallHtml = '';
+  if(targetTrajectory){
+    const totalTarget = total * 12; // objectif sur 12 semaines de programme
+    const overallPct = totalTarget > 0 ? Math.min(Math.round((totalCompletionsCount / totalTarget) * 100), 100) : 0;
+    overallHtml = `<div class="week-overall">Assiduité sur vos 12 semaines d'objectif : <b>${overallPct}%</b> (${totalCompletionsCount} exercice${totalCompletionsCount > 1 ? 's' : ''} réalisé${totalCompletionsCount > 1 ? 's' : ''} au total)</div>`;
+  }
+
+  el.innerHTML = `
+    <div class="week-summary-head">
+      <span>📅 Cette semaine</span>
+      <span class="week-summary-count">${done} / ${total}</span>
+    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" style="width:${pct}%"></div></div>
+    <div class="week-summary-msg">${
+      total === 0
+        ? 'Aucun exercice prévu ce jour (repos).'
+        : remaining > 0
+          ? `Il reste <b>${remaining} exercice${remaining > 1 ? 's' : ''}</b> à cocher cette semaine pour rester sur la bonne voie vers votre objectif à 3 mois.`
+          : '🎉 Tous les exercices de la semaine sont réalisés — excellent travail !'
+    }</div>
+    ${overallHtml}
+  `;
 }
 
 async function loadSaved(){
@@ -1427,8 +1592,11 @@ async function onAuthed(user){
   document.getElementById('userEmailTag').textContent = user.email || '';
   showApp();
   await loadSaved();
+  await loadCompletions();
   renderLogTable();
   computeAndRender();
+  renderDays(currentWeek);
+  renderWeekSummary();
 }
 
 async function initAuth(){
