@@ -517,6 +517,7 @@
     margin:10px 0;
   }
   .meal-alert:empty{display:none;}
+  .meal-alert-error{background:#fdeaea; border-color:#e58a8a; color:#a12f2f;}
 
   .notif-btn{
     width:100%; padding:12px; border-radius:10px; border:1.5px solid var(--line);
@@ -1195,6 +1196,7 @@ let mealDailyHistory = {};         // { "2026-08-18": nombre_repas_coches, ... }
 let currentMacroTargets = { kcal:0, prot:0, carbs:0, fat:0 }; // mis à jour par computeAndRender()
 let notifTimerId = null;
 let notifiedMeals = new Set();     // pour ne pas notifier deux fois le même repas dans la session
+let mealSaveErrorActive = false;   // vrai si la dernière sauvegarde Supabase a échoué (ex: table manquante)
 
 
 /* ---------------- VIDEO LAUNCHER (100% hors ligne — vidéos locales uniquement) ---------------- */
@@ -1674,7 +1676,10 @@ async function loadMealCompletions(){
       mealDailyHistory[r.day_key] = (mealDailyHistory[r.day_key] || 0) + 1;
       if(r.day_key === currentDayKey) mealCompletions.add(`${r.meal_index}`);
     });
-  }catch(e){ console.error('Supabase loadMealCompletions error:', e); }
+  }catch(e){
+    console.error('Supabase loadMealCompletions error:', e);
+    showMealSaveError();
+  }
 }
 
 async function toggleMealCompletion(mealIndex, checked){
@@ -1691,17 +1696,37 @@ async function toggleMealCompletion(mealIndex, checked){
   renderMealWarning();
   if(currentUser && sb){
     try{
+      let saveError = null;
       if(checked){
-        await sb.from('meal_completions').upsert(
+        const { error } = await sb.from('meal_completions').upsert(
           { user_id: currentUser.id, day_key: currentDayKey, meal_index: mealIndex },
           { onConflict: 'user_id,day_key,meal_index' }
         );
+        saveError = error;
       } else {
-        await sb.from('meal_completions').delete().match({ user_id: currentUser.id, day_key: currentDayKey, meal_index: mealIndex });
+        const { error } = await sb.from('meal_completions').delete().match({ user_id: currentUser.id, day_key: currentDayKey, meal_index: mealIndex });
+        saveError = error;
       }
-    }catch(e){ console.error('Supabase toggleMealCompletion error:', e); }
+      if(saveError) throw saveError;
+      hideMealSaveError();
+    }catch(e){
+      console.error('Supabase toggleMealCompletion error:', e);
+      showMealSaveError();
+    }
   }
 }
+
+function showMealSaveError(){
+  mealSaveErrorActive = true;
+  renderMealWarning();
+}
+function hideMealSaveError(){
+  if(mealSaveErrorActive){
+    mealSaveErrorActive = false;
+    renderMealWarning();
+  }
+}
+
 
 function nowHHMM(){
   const d = new Date();
@@ -1791,6 +1816,10 @@ function renderNutritionHistory(){
 function renderMealWarning(){
   const el = document.getElementById('mealWarning');
   if(!el) return;
+  if(mealSaveErrorActive){
+    el.innerHTML = `<div class="meal-alert meal-alert-error">⚠️ La sauvegarde des repas a échoué — vérifiez votre connexion, ou que la table Supabase "meal_completions" est bien créée (voir schema_meals.sql).</div>`;
+    return;
+  }
   const now = nowHHMM();
   // repas dont l'heure + 60 min est dépassée et pas encore coché
   const addMinutes = (hhmm, min) => {
@@ -1803,10 +1832,33 @@ function renderMealWarning(){
   el.innerHTML = `<div class="meal-alert">⚠️ ${missed.map(m => `<b>${m.name}</b> (prévu ${m.time})`).join(', ')} pas encore coché — n'oubliez pas de valider une fois le repas pris.</div>`;
 }
 
+function startMealNotificationTimer(){
+  if(notifTimerId) clearInterval(notifTimerId);
+  notifTimerId = setInterval(() => {
+    const now = nowHHMM();
+    MEALS.forEach((m,i) => {
+      if(m.time === now && !mealCompletions.has(`${i}`) && !notifiedMeals.has(`${currentDayKey}:${i}`)){
+        notifiedMeals.add(`${currentDayKey}:${i}`);
+        try{ new Notification('PowerHouse Gym — ' + m.name, { body: m.desc + ' — c\'est l\'heure !' }); }catch(e){}
+      }
+    });
+    renderMealWarning();
+  }, 30000);
+}
+
 function setupMealNotifications(){
   const btn = document.getElementById('notifBtn');
   const note = document.getElementById('notifNote');
   if(!btn) return;
+
+  // Si l'autorisation a déjà été donnée lors d'une session précédente, on réactive directement.
+  if('Notification' in window && Notification.permission === 'granted'){
+    btn.textContent = '🔔 Rappels activés';
+    btn.disabled = true;
+    note.textContent = 'Vous recevrez une alerte à l\'heure de chaque repas tant que cette page reste ouverte.';
+    startMealNotificationTimer();
+  }
+
   btn.addEventListener('click', async () => {
     if(!('Notification' in window)){
       note.textContent = 'Les notifications ne sont pas supportées par ce navigateur.';
@@ -1820,25 +1872,26 @@ function setupMealNotifications(){
     btn.textContent = '🔔 Rappels activés pour cette session';
     btn.disabled = true;
     note.textContent = 'Vous recevrez une alerte à l\'heure de chaque repas tant que cette page reste ouverte.';
-    if(notifTimerId) clearInterval(notifTimerId);
-    notifTimerId = setInterval(() => {
-      const now = nowHHMM();
-      MEALS.forEach((m,i) => {
-        if(m.time === now && !mealCompletions.has(`${i}`) && !notifiedMeals.has(`${currentDayKey}:${i}`)){
-          notifiedMeals.add(`${currentDayKey}:${i}`);
-          try{ new Notification('PowerHouse Gym — ' + m.name, { body: m.desc + ' — c\'est l\'heure !' }); }catch(e){}
-        }
-      });
-      renderMealWarning();
-    }, 30000);
+    startMealNotificationTimer();
   });
+}
+
+function notifyOverdueMealsOnOpen(){
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  const now = nowHHMM();
+  const overdue = MEALS.filter((m,i) => !mealCompletions.has(`${i}`) && m.time <= now);
+  if(overdue.length === 0) return;
+  try{
+    new Notification('PowerHouse Gym — Repas en attente', {
+      body: overdue.map(m => m.name).join(', ') + ' — pensez à cocher une fois pris.'
+    });
+  }catch(e){}
 }
 
 renderMealTimeline();
 renderMealMacroProgress();
 renderNutritionHistory();
 renderMealWarning();
-setupMealNotifications();
 
 async function loadSaved(){
   if(!currentUser || !sb) return;
@@ -2056,6 +2109,8 @@ async function onAuthed(user){
   renderMealMacroProgress();
   renderNutritionHistory();
   renderMealWarning();
+  setupMealNotifications();
+  notifyOverdueMealsOnOpen();
 }
 
 async function initAuth(){
