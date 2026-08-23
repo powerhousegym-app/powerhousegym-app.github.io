@@ -377,18 +377,29 @@
     font-family:'Inter',sans-serif;
   }
 
-  /* ---------- WEEK TOGGLE ---------- */
-  .week-toggle-wrap{
-    display:flex; align-items:center; justify-content:center; gap:10px;
-    margin-bottom:16px;
+  /* ---------- WEEK PROGRESS (numbered, 12-week / 3-month objective) ---------- */
+  .week-progress-wrap{ margin-bottom:10px; }
+  .week-progress-top{ display:flex; align-items:center; gap:10px; }
+  .week-nav-btn{
+    flex:0 0 auto; width:38px; height:38px; border-radius:10px; border:1.5px solid var(--line);
+    background:var(--card); color:var(--ink); font-size:18px; font-weight:700; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
   }
-  .week-toggle{display:flex; gap:6px; flex:1; max-width:420px;}
-  .week-btn{
-    flex:1; padding:10px 2px; border-radius:10px; border:1.5px solid var(--line);
-    background:var(--card); font-family:'Poppins', sans-serif; font-size:12px; font-weight:700;
-    color:var(--ink-dim); cursor:pointer; text-align:center; transition:all .2s ease;
+  .week-nav-btn:disabled{ opacity:.35; cursor:default; }
+  .week-progress-mid{ flex:1; text-align:center; }
+  .week-progress-label{ font-family:'Poppins', sans-serif; font-weight:800; font-size:14px; color:var(--ink); margin-bottom:6px; }
+  .week-progress-bar{ height:8px; border-radius:5px; background:var(--line); overflow:hidden; }
+  .week-progress-fill{ height:100%; background:linear-gradient(90deg, var(--blue), #4f7fff); border-radius:5px; transition:width .3s ease; }
+  .week-progress-sub{ font-size:11px; color:var(--ink-dim); margin-top:5px; }
+  .week-cta{
+    margin:18px 0 6px; padding:20px 18px; border-radius:16px;
+    background:linear-gradient(135deg, var(--blue), #4f7fff);
+    text-align:center; cursor:pointer; border:none; width:100%;
+    font-family:'Poppins', sans-serif;
   }
-  .week-btn.active{background:var(--blue); border-color:var(--blue); color:#fff;}
+  .week-cta .wc-title{font-size:15px; font-weight:800; color:#fff; margin-bottom:4px;}
+  .week-cta .wc-sub{font-size:12px; color:rgba(255,255,255,.85); line-height:1.5;}
+  .week-cta:active{opacity:.85;}
   .week-note{
     text-align:center; font-size:11.5px; color:var(--ink-dim); line-height:1.5;
     margin:-8px 0 18px;
@@ -643,14 +654,18 @@
     </div>
   </details>
 
-  <div class="week-toggle-wrap">
-    <div class="week-toggle" id="weekToggle">
-      <div class="week-btn active" data-week="A">Semaine A</div>
-      <div class="week-btn" data-week="B">Semaine B</div>
-      <div class="week-btn" data-week="C">Semaine C</div>
+  <div class="week-progress-wrap" id="weekProgressWrap">
+    <div class="week-progress-top">
+      <button class="week-nav-btn" id="weekPrevBtn" type="button" aria-label="Semaine précédente">‹</button>
+      <div class="week-progress-mid">
+        <div class="week-progress-label">Semaine <span id="weekNumLabel">1</span> / 12</div>
+        <div class="week-progress-bar"><div class="week-progress-fill" id="weekProgressFill"></div></div>
+        <div class="week-progress-sub" id="weekProgressSub">Mois 1 sur 3</div>
+      </div>
+      <button class="week-nav-btn" id="weekNextBtn" type="button" aria-label="Semaine suivante">›</button>
     </div>
   </div>
-  <div class="week-note">Les trois semaines ciblent les mêmes groupes musculaires (jambes, poussée, tirage, isolation) avec des exercices différents — alternez A → B → C d'une semaine sur l'autre pour progresser sans jamais répéter la même routine.</div>
+  <div class="week-note">Objectif sur 3 mois (12 semaines) : les exercices tournent sur 3 variantes (jambes/poussée/tirage/isolation identiques, mouvements différents) pour ne jamais répéter deux semaines de suite. Naviguez avec les flèches, ou touchez le bouton en bas de chaque semaine une fois terminée.</div>
 
   <div id="days"></div>
 
@@ -1087,7 +1102,9 @@ const DAYS_C = [
   },
 ];
 
-let currentWeek = 'A';
+const TOTAL_PROGRAM_WEEKS = 12;
+let programWeek = 1; // semaine 1 à 12 (objectif 3 mois) — chargé depuis le profil au login
+function weekLetter(n){ return ['A','B','C'][(n - 1) % 3]; }
 
 
 /* ---------------- VIDEO LAUNCHER (100% hors ligne — vidéos locales uniquement) ---------------- */
@@ -1135,8 +1152,27 @@ function wireVideoLauncher(container){
 /* ---------------- RENDER DAYS ---------------- */
 const daysEl = document.getElementById('days');
 
-function renderDays(week){
-  const DAYS = week === 'B' ? DAYS_B : week === 'C' ? DAYS_C : DAYS_A;
+function updateWeekProgressUI(){
+  document.getElementById('weekNumLabel').textContent = programWeek;
+  document.getElementById('weekProgressFill').style.width = ((programWeek / TOTAL_PROGRAM_WEEKS) * 100) + '%';
+  const mois = Math.min(3, Math.ceil(programWeek / 4));
+  document.getElementById('weekProgressSub').textContent = programWeek >= TOTAL_PROGRAM_WEEKS
+    ? 'Objectif 3 mois atteint 🎉'
+    : `Mois ${mois} sur 3`;
+  document.getElementById('weekPrevBtn').disabled = programWeek <= 1;
+  document.getElementById('weekNextBtn').disabled = programWeek >= TOTAL_PROGRAM_WEEKS;
+}
+
+function goToWeek(n){
+  programWeek = Math.max(1, Math.min(TOTAL_PROGRAM_WEEKS, n));
+  saveProgramWeek(programWeek);
+  renderDays(programWeek);
+}
+
+function renderDays(weekNum){
+  const letter = weekLetter(weekNum);
+  const DAYS = letter === 'B' ? DAYS_B : letter === 'C' ? DAYS_C : DAYS_A;
+  updateWeekProgressUI();
   daysEl.innerHTML = '';
 
   DAYS.forEach(day => {
@@ -1206,19 +1242,66 @@ function renderDays(week){
   // Open day 1 by default
   daysEl.querySelector('.day').classList.add('open');
   daysEl.querySelector('.day .day-header').setAttribute('aria-expanded','true');
+
+  // ---- Bouton en bas de la liste : semaine suivante, ou nouvel objectif si semaine 12 ----
+  const cta = document.createElement('button');
+  cta.type = 'button';
+  cta.className = 'week-cta';
+
+  if(weekNum >= TOTAL_PROGRAM_WEEKS){
+    cta.innerHTML = `
+      <div class="wc-title">🎉 Objectif 3 mois atteint — programmer un nouvel objectif →</div>
+      <div class="wc-sub">Retournez au calculateur pour vérifier votre poids, votre taille et fixer un nouvel objectif pour les 12 prochaines semaines.</div>
+    `;
+    cta.addEventListener('click', startNewObjective);
+  } else {
+    const nextNum = weekNum + 1;
+    cta.innerHTML = `
+      <div class="wc-title">✅ Semaine ${weekNum} terminée — passer à la Semaine ${nextNum} →</div>
+      <div class="wc-sub">Mêmes groupes musculaires, exercices différents — pour continuer à progresser sans routine.</div>
+    `;
+    cta.addEventListener('click', () => {
+      goToWeek(nextNum);
+      document.getElementById('weekProgressWrap').scrollIntoView({behavior:'smooth', block:'center'});
+    });
+  }
+  daysEl.appendChild(cta);
 }
 
-renderDays(currentWeek);
+renderDays(programWeek);
 
-document.getElementById('weekToggle').querySelectorAll('.week-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const week = btn.getAttribute('data-week');
-    if(week === currentWeek) return;
-    currentWeek = week;
-    document.querySelectorAll('#weekToggle .week-btn').forEach(b => b.classList.toggle('active', b === btn));
-    renderDays(currentWeek);
-  });
-});
+document.getElementById('weekPrevBtn').addEventListener('click', () => goToWeek(programWeek - 1));
+document.getElementById('weekNextBtn').addEventListener('click', () => goToWeek(programWeek + 1));
+
+async function saveProgramWeek(n){
+  if(!currentUser || !sb) return;
+  try{
+    await sb.from('profiles').upsert({ user_id: currentUser.id, program_week: n }, { onConflict:'user_id' });
+  }catch(e){ console.error('Supabase saveProgramWeek error:', e); }
+}
+
+async function startNewObjective(){
+  const ok = confirm('Démarrer un nouvel objectif de 3 mois ? Vos anciennes mesures hebdomadaires (semaines 1 à 12) seront effacées pour repartir sur une nouvelle trajectoire. Votre historique de poids le plus récent reste visible dans le calculateur pour vous aider à fixer le nouvel objectif.');
+  if(!ok) return;
+
+  if(currentUser && sb){
+    try{ await sb.from('progress_entries').delete().eq('user_id', currentUser.id); }
+    catch(e){ console.error('Supabase reset entries error:', e); }
+  }
+  logEntries = [];
+  renderLogTable();
+
+  programWeek = 1;
+  saveProgramWeek(1);
+  renderDays(programWeek);
+
+  const calcCard = document.getElementById('calcCard');
+  calcCard.setAttribute('open', '');
+  setTimeout(() => {
+    calcCard.scrollIntoView({behavior:'smooth', block:'start'});
+    document.getElementById('inPoids').focus();
+  }, 150);
+}
 
 /* ---------------- BONUS VIDEOS (uploaded clips with no direct slot in the program) ---------------- */
 const BONUS_GROUPS = [
@@ -1332,6 +1415,7 @@ async function loadSaved(){
       if(prof.taille) document.getElementById('inTaille').value = prof.taille;
       if(prof.objectif) document.getElementById('inObjectif').value = prof.objectif;
       if(prof.level) selectLevel(prof.level);
+      if(prof.program_week){ programWeek = Math.max(1, Math.min(TOTAL_PROGRAM_WEEKS, prof.program_week)); }
     }
   }catch(e){ console.error('Supabase loadSaved (profile) error:', e); }
   try{
@@ -1339,6 +1423,7 @@ async function loadSaved(){
     if(error) throw error;
     logEntries = (entries || []).map(e => ({ week:e.week, weight:e.weight }));
   }catch(e){ console.error('Supabase loadSaved (entries) error:', e); }
+  renderDays(programWeek);
 }
 
 function renderBarChart(poids){
