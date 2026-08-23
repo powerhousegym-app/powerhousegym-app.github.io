@@ -553,7 +553,14 @@
   </header>
 
   <div class="intro">
-    <b>Comment ça marche :</b> 3 séances de musculation complètes d'environ 32 minutes (lundi, mercredi, vendredi) ciblant tout le corps — squat/hinge, poussée, tirage, isolation bras, <b>et un 5ᵉ exercice mollets ou fessiers</b> pour ne plus négliger le bas du corps — et 3 jours actifs de 15 minutes (mardi, jeudi, samedi) avec quelques exercices légers. Le dimanche est un jour de repos complet. Le programme alterne entre <b>Semaine A</b>, <b>Semaine B</b> et <b>Semaine C</b> : mêmes objectifs musculaires, exercices différents, pour ne jamais répéter la même routine. Chaque exercice indique son objectif musculaire et en quoi il consiste. Chaque vidéo est intégrée directement dans le fichier (aucune connexion internet requise) — touchez la miniature pour la lancer, elle joue en boucle continue jusqu'à ce que vous la refermiez.
+    <b>Comment utiliser cette application :</b><br><br>
+    <b>1. Le calculateur</b> — Remplissez une fois votre profil (sexe, âge, poids, taille, objectif de poids) dans la section "🧮 Calculateur & suivi de progression" pour obtenir vos besoins caloriques, vos macros et votre trajectoire sur 3 mois.<br><br>
+    <b>2. Les séances</b> — 3 séances de musculation complètes d'environ 32 minutes (lundi, mercredi, vendredi) ciblant tout le corps — squat/hinge, poussée, tirage, isolation bras, <b>et un 5ᵉ exercice mollets ou fessiers</b> pour ne plus négliger le bas du corps — et 3 jours actifs de 15 minutes (mardi, jeudi, samedi) avec quelques exercices légers. Le dimanche est un jour de repos complet.<br><br>
+    <b>3. La progression sur 3 mois</b> — Le programme est numéroté <b>Semaine 1 à Semaine 12</b>, affiché tout en haut avec une barre de progression. Les exercices changent automatiquement chaque semaine (3 variantes différentes qui tournent) pour ne jamais répéter la même routine, sans que vous ayez à choisir quoi que ce soit. Une fois une semaine terminée, touchez le bouton bleu en bas de la liste pour passer à la semaine suivante.<br><br>
+    <b>4. Le suivi du poids</b> — Chaque semaine, entrez votre poids mesuré dans "Suivi hebdomadaire du poids" (section calculateur) pour comparer votre progression réelle à votre objectif sur le graphique.<br><br>
+    <b>5. À la semaine 12</b> — Un bouton "🎉 Objectif 3 mois atteint" apparaît : il vous ramène directement au calculateur pour vérifier votre nouveau poids, votre taille et fixer un nouvel objectif, puis relance un nouveau cycle de 12 semaines à partir de la Semaine 1.<br><br>
+    <b>Vidéos</b> — Chaque exercice indique son objectif musculaire et en quoi il consiste. Chaque vidéo est intégrée directement dans le fichier (aucune connexion internet requise) — touchez la miniature pour la lancer, elle joue en boucle continue jusqu'à ce que vous la refermiez.<br><br>
+    <b>Compte</b> — Vos données (profil, poids, semaine en cours) sont liées à votre email et vous suivent sur n'importe quel appareil où vous vous reconnectez.
   </div>
 
   <details class="nutrition" id="nutritionCard">
@@ -676,7 +683,7 @@
   </details>
 
   <footer>
-    Les 43 vidéos (dont vos 10 nouvelles vidéos, en HD, intégrées dans la Semaine C) sont directement dans ce fichier et fonctionnent 100% hors ligne — aucune connexion internet ni lecteur externe requis. Touchez une miniature pour lancer la lecture en boucle.<br>
+    Les 43 vidéos (dont vos 10 nouvelles vidéos, en HD) sont directement dans ce fichier et fonctionnent 100% hors ligne — aucune connexion internet ni lecteur externe requis. Touchez une miniature pour lancer la lecture en boucle.<br>
     Ce document ne remplace pas un avis médical ni un coaching personnalisé.
   </footer>
 
@@ -971,7 +978,7 @@ const DAYS_A = [
 
 const DAYS_B = [
   {
-    n:1, type:'main', title:'Lundi — Séance A', sub:'Corps complet · Semaine B', dur:'32 min',
+    n:1, type:'main', title:'Lundi — Séance A', sub:'Corps complet', dur:'32 min',
     exos:[
       ['squat','Front squat','3 séries × 8-10 reps','Barre posée à l\'avant des épaules, coudes hauts. Descendez le buste bien droit jusqu\'à cuisses parallèles, puis remontez.','front_squat','Quadriceps, fessiers','Variante du squat où la barre est posée à l\'avant des épaules, ce qui redresse le buste et accentue le travail des quadriceps.'],
       ['benchpress','Pull-over élastique','3 séries × 8-10 reps','Allongé au sol, tenez un élastique tendu à deux mains au-dessus de la tête, puis ramenez-le vers le bassin en gardant les bras tendus.','band_pullover','Pectoraux, dos (grand dorsal)','Tirage d\'un élastique tendu au-dessus de la tête vers le bassin, allongé au sol, qui étire et engage la poitrine.'],
@@ -981,7 +988,7 @@ const DAYS_B = [
     ]
   },
   {
-    n:2, type:'active', title:'Mardi — Jour actif', sub:'Activation légère · Semaine B', dur:'15 min',
+    n:2, type:'active', title:'Mardi — Jour actif', sub:'Activation légère', dur:'15 min',
     exos:[
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation, sans forcer.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['squatbw','Goblet squat aux haltères','2 séries × 12-15 reps','Debout, tenez un haltère à deux mains contre la poitrine. Descendez en squat comme d\'habitude, en gardant le buste droit.','dumbbell_legs5','Quadriceps, fessiers','Squat tenu avec un seul haltère contre la poitrine, qui aide à garder le buste droit pendant la descente.'],
@@ -991,7 +998,7 @@ const DAYS_B = [
     ]
   },
   {
-    n:3, type:'main', title:'Mercredi — Séance B', sub:'Corps complet · Semaine B', dur:'32 min',
+    n:3, type:'main', title:'Mercredi — Séance B', sub:'Corps complet', dur:'32 min',
     exos:[
       ['hinge','Soulevé de terre roumain haltères','3 séries × 8-10 reps','Debout, un haltère dans chaque main devant les cuisses. Poussez les hanches vers l\'arrière en descendant les haltères, puis remontez.','rdl_dumbbell','Ischio-jambiers, fessiers, bas du dos','Même mouvement de hanche que la version barre, mais avec un haltère dans chaque main — plus simple pour ajuster la charge.'],
       ['overhead','Développé épaules haltères','3 séries × 8-10 reps','Assis ou debout, un haltère dans chaque main à hauteur d\'épaules. Poussez les deux haltères au-dessus de la tête.','shoulders_3d','Épaules, triceps','Développé militaire réalisé avec des haltères, ce qui demande plus de stabilisation que la barre.'],
@@ -1001,7 +1008,7 @@ const DAYS_B = [
     ]
   },
   {
-    n:4, type:'active', title:'Jeudi — Jour actif', sub:'Activation légère · Semaine B', dur:'15 min',
+    n:4, type:'active', title:'Jeudi — Jour actif', sub:'Activation légère', dur:'15 min',
     exos:[
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['lunge','Fentes bulgares aux haltères','2 séries × 10/jambe','Pied arrière posé sur un banc, un haltère dans chaque main. Descendez le genou avant jusqu\'à un angle de 90°, puis remontez.','dumbbell_legs4','Quadriceps, fessiers, équilibre','Fente avec le pied arrière surélevé sur un banc, ce qui augmente l\'étirement et l\'implication du quadriceps.'],
@@ -1011,7 +1018,7 @@ const DAYS_B = [
     ]
   },
   {
-    n:5, type:'main', title:'Vendredi — Séance C', sub:'Corps complet · Semaine B', dur:'32 min',
+    n:5, type:'main', title:'Vendredi — Séance C', sub:'Corps complet', dur:'32 min',
     exos:[
       ['legpress','Goblet squat aux haltères','3 séries × 10-12 reps','Debout, tenez un haltère à deux mains contre la poitrine. Descendez en squat en gardant le buste droit, puis remontez.','dumbbell_legs5','Quadriceps, fessiers','Squat tenu avec un seul haltère contre la poitrine, qui aide à garder le buste droit pendant la descente.'],
       ['benchpress','Écarté à la poulie (haut/milieu/bas)','3 séries × 10-12 reps','Face à une poulie, variez la hauteur des poignées pour cibler le haut, le milieu ou le bas des pectoraux, en refermant les bras devant vous.','cable_chest_fly','Haut des pectoraux, épaules','Écarté aux câbles à trois hauteurs différentes, pour isoler successivement le haut, le milieu et le bas des pectoraux.'],
@@ -1021,7 +1028,7 @@ const DAYS_B = [
     ]
   },
   {
-    n:6, type:'active', title:'Samedi — Jour actif', sub:'Activation légère · Semaine B', dur:'15 min',
+    n:6, type:'active', title:'Samedi — Jour actif', sub:'Activation légère', dur:'15 min',
     exos:[
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['squatbw','Squats au poids du corps','2 séries × 15 reps','Pieds largeur épaules, bras tendus devant. Descendez comme un squat normal, sans charge, puis remontez.','glutes_quads','Quadriceps, fessiers','Version du squat sans charge, pour travailler la technique et activer les jambes.'],
@@ -1038,7 +1045,7 @@ const DAYS_B = [
 
 const DAYS_C = [
   {
-    n:1, type:'main', title:'Lundi — Séance A', sub:'Corps complet · Semaine C', dur:'32 min',
+    n:1, type:'main', title:'Lundi — Séance A', sub:'Corps complet', dur:'32 min',
     exos:[
       ['squat','Front squat','3 séries × 8-10 reps','Barre posée à l\'avant des épaules, coudes hauts. Descendez le buste bien droit jusqu\'à cuisses parallèles, puis remontez.','front_squat','Quadriceps, fessiers','Variante du squat où la barre est posée à l\'avant des épaules, ce qui redresse le buste et accentue le travail des quadriceps.'],
       ['bandcircuit','Circuit élastique : pectoraux, épaules, biceps','3 séries × 22 reps','Un élastique tendu sous les pieds ou fixé bas. Enchaînez sans repos : curl biceps, élévation frontale/latérale puis écarté devant la poitrine, en gardant les coudes légèrement fléchis.','band_upper_circuit','Pectoraux, épaules, biceps','Circuit au poids du corps + élastique enchaînant 3 mouvements pour le haut du corps, idéal quand le temps ou le matériel est limité.'],
@@ -1048,7 +1055,7 @@ const DAYS_C = [
     ]
   },
   {
-    n:2, type:'active', title:'Mardi — Jour actif', sub:'Activation légère · Semaine C', dur:'15 min',
+    n:2, type:'active', title:'Mardi — Jour actif', sub:'Activation légère', dur:'15 min',
     exos:[
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation, sans forcer.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['squatbw','Squats au poids du corps','2 séries × 15 reps','Pieds largeur épaules, bras tendus devant pour l\'équilibre. Descendez comme un squat normal, sans charge, puis remontez.','glutes_quads','Quadriceps, fessiers','Version du squat sans charge, pour travailler la technique et activer les jambes.'],
@@ -1058,7 +1065,7 @@ const DAYS_C = [
     ]
   },
   {
-    n:3, type:'main', title:'Mercredi — Séance B', sub:'Corps complet · Semaine C', dur:'32 min',
+    n:3, type:'main', title:'Mercredi — Séance B', sub:'Corps complet', dur:'32 min',
     exos:[
       ['hinge','Soulevé de terre roumain haltères','3 séries × 8-10 reps','Debout, un haltère dans chaque main devant les cuisses. Poussez les hanches vers l\'arrière en descendant les haltères le long des jambes, dos plat, puis remontez.','rdl_dumbbell','Ischio-jambiers, fessiers, bas du dos','Mouvement de hanche aux haltères qui étire puis contracte les ischio-jambiers et les fessiers, en gardant le bas du dos protégé.'],
       ['shoulders3d','Épaules 3D aux haltères','3 séries × 10-12 reps','Enchaînez trois mouvements aux haltères assis : développé au-dessus de la tête, élévations latérales, puis oiseau buste penché en avant.','shoulders_3d','Épaules (faisceau avant, latéral, arrière)','Trois exercices d\'affilée qui ciblent chacun des trois faisceaux du deltoïde, pour des épaules complètes et arrondies.'],
@@ -1068,7 +1075,7 @@ const DAYS_C = [
     ]
   },
   {
-    n:4, type:'active', title:'Jeudi — Jour actif', sub:'Activation légère · Semaine C', dur:'15 min',
+    n:4, type:'active', title:'Jeudi — Jour actif', sub:'Activation légère', dur:'15 min',
     exos:[
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['lunge','Fentes au poids du corps','2 séries × 10/jambe','Debout, mains sur les hanches. Faites un grand pas en avant et descendez jusqu\'à ce que le genou arrière frôle le sol.','dumbbell_legs','Quadriceps, fessiers, équilibre','Un grand pas en avant puis flexion des deux genoux, en alternant les jambes.'],
@@ -1078,7 +1085,7 @@ const DAYS_C = [
     ]
   },
   {
-    n:5, type:'main', title:'Vendredi — Séance C', sub:'Corps complet · Semaine C', dur:'32 min',
+    n:5, type:'main', title:'Vendredi — Séance C', sub:'Corps complet', dur:'32 min',
     exos:[
       ['legpress','Presse à cuisses ou fentes','3 séries × 10-12 reps','Assis sur la machine, pieds largeur épaules sur le plateau. Poussez le plateau en tendant les jambes sans verrouiller les genoux.','heels_plates','Quadriceps, fessiers','Poussée des jambes contre une plateforme inclinée, assis sur une machine.'],
       ['inclinedb','Développé incliné haltères','3 séries × 10-12 reps','Banc réglé à 30-45°. Un haltère dans chaque main au niveau des épaules, poussez vers le haut jusqu\'à extension complète.','incline_bench','Haut des pectoraux, épaules, triceps','Développé couché sur banc incliné, avec un haltère dans chaque main.'],
@@ -1088,7 +1095,7 @@ const DAYS_C = [
     ]
   },
   {
-    n:6, type:'active', title:'Samedi — Jour actif', sub:'Activation légère · Semaine C', dur:'15 min',
+    n:6, type:'active', title:'Samedi — Jour actif', sub:'Activation légère', dur:'15 min',
     exos:[
       ['walk','Marche rapide ou vélo','5 min','Marchez d\'un bon pas ou pédalez à intensité modérée pour activer la circulation.',null,'Cardio léger, récupération active','Activité cardio à intensité modérée pour faire circuler le sang sans fatiguer les muscles.'],
       ['squatbw','Squats au poids du corps','2 séries × 15 reps','Pieds largeur épaules, bras tendus devant. Descendez comme un squat normal, sans charge, puis remontez.','glutes_quads','Quadriceps, fessiers','Version du squat sans charge, pour travailler la technique et activer les jambes.'],
